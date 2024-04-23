@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<head>
+    <meta charset = "UTF-8">
+    <title> Schedule </title>
+    <style>
+        table {
+            font-family: Arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Расписание</h1>
+    <button class="button"><a href="index" style="color: inherit; text-decoration: none;">Вернуться назад</a></button>
+    <form action = "" method = "post">
+        {%  csrf_token %}
+        {{ form.as_p }}
+        <input type = "submit" value = "Добавить" />
+    </form>
+
+
+
+    <br />
+    <table>
+        <tr>
+            <th>Номер группы</th>
+            <th>Предмет</th>
+            <th>Преподователь</th>
+            <th>Семестр</th>
+            <th>Дата</th>
+        </tr>
+        {% for obj in objects %}
+        <tr>
+            <td>{{ obj.group }}</td>
+            <td>{{ obj.discipline }}</td>
+            <td>{{ obj.teacher }}</td>
+            <td>{{ obj.semester }}</td>
+            <td>{{ obj.data }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+<html>
