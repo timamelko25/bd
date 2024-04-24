@@ -9,7 +9,7 @@ class SessionForm(forms.ModelForm):
     teacher = forms.ModelChoiceField(queryset=Teachers.objects.all().order_by('name'), label='Преподаватель', empty_label='')
     discipline = forms.ModelChoiceField(queryset=Discipline.objects.all().order_by('name'), label='Дисциплина', empty_label='')
     mark = forms.ModelChoiceField(queryset=Mark.objects.all(), label='Оценка', empty_label='')
-    year = forms.IntegerField(label='Год', min_value=2000, max_value=2004)
+    year = forms.IntegerField(label='Год', min_value=2000, max_value=2024)
     
     class Meta:
         model = Session

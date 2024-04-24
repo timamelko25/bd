@@ -93,13 +93,14 @@ def session(request):
                 objects = Session.objects.filter(year=year, semestr=semestr)
             
     elif request.method == 'GET':
-        filter_form = FilterForm(request.GET)
-        if filter_form.is_valid():
-            year = filter_form.cleaned_data.get('year')
-            semestr = filter_form.cleaned_data.get('semestr')
-            objects = Session.objects.filter(year=year, semestr=semestr)
-    
+        filter_form = FilterForm()
+        year = request.GET.get('year')
+        semestr = request.GET.get('semestr')
+        if year and semestr:
+            objects = Session.objects.filter(year=year, semestr=semestr, mark__mark__in=['2', 'незачет'])
+
     return render(request, 'schedule/session.html', {'form': form, 'objects': objects, 'search_query': search_query, 'filter_form': filter_form})
+
 
 
 
