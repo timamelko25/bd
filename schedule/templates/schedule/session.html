@@ -30,14 +30,33 @@
     <form action = "" method = "post">
         {%  csrf_token %}
         {{ form.as_p }}
-        <input type = "submit" value = "Добавить" />
+        <input type = "submit" value = "Добавить оценку" />
     </form>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
     <br />
+    <h2> Поиск </h2>
     <form method="GET">
         {%  csrf_token %}
         <input type="text" name="search" value="{{ search_query }}">
         <button type="submit">Поиск</button>
     </form>
+
+    <h2> Список отчисленных студентов </h2>
+
+    <form id="filter_form" method="get">
+        {%  csrf_token %}
+        {{ filter_form.as_p }}
+        <input type = "submit" value = "Показать" />
+        <button class="button"><a href="session" style="color: inherit; text-decoration: none;">Сбросить фильтры</a></button>
+    </form>
+
 
     <br />
     <table>
@@ -45,6 +64,7 @@
             <th>Студент</th>
             <th>Семестр</th>
             <th>Дисциплина</th>
+            <th>Преподаватель</th>
             <th>Оценка</th>
             <th>Год</th>
         </tr>
@@ -53,6 +73,7 @@
             <td>{{ obj.student }}</td>
             <td>{{ obj.semestr }}</td>
             <td>{{ obj.discipline }}</td>
+            <td>{{ obj.teacher }}</td>
             <td>{{ obj.mark }}</td>
             <td>{{ obj.year }}</td>
         </tr>

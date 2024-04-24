@@ -10,4 +10,5 @@ urlpatterns = [
     path('session', views.session, name = 'session'),
     path('teachers', views.teachers, name = 'teachers'),
     path('students', views.students, name = 'students'),
+    path('edit_schedule/<int:pk>/', views.edit_schedule, name='edit_schedule'),
 ]

@@ -1,7 +1,9 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset = "UTF-8">
-    <title> Schedule </title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактировать расписание</title>
     <style>
         table {
             font-family: Arial, sans-serif;
@@ -35,14 +37,32 @@
     </script>
 </head>
 <body>
-    <h1>Расписание</h1>
-    <button class="button"><a href="index" style="color: inherit; text-decoration: none;">Вернуться назад</a></button>
-    <form action = "" method = "post">
-        {%  csrf_token %}
-        {{ form.as_p }}
-        <input type = "submit" value = "Добавить" />
-    </form>
+    <h1>Редактировать расписание</h1>
+    <button class="button"><a href="{% url 'schedule' %}" style="color: inherit; text-decoration: none;">Вернуться назад</a></button>
 
+    <br \>
+    <table>
+        <tr>
+            <th>Номер группы</th>
+            <th>Предмет</th>
+            <th>Преподователь</th>
+            <th>Семестр</th>
+            <th>Дата</th>
+        </tr>
+        <tr>
+            <td>{{ schedule.group }}</td>
+            <td>{{ schedule.discipline }}</td>
+            <td>{{ schedule.teacher }}</td>
+            <td>{{ schedule.semester }}</td>
+            <td>{{ schedule.date }}</td>
+        </tr>
+    <table />
+    <br \>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.teacher }}
+        <input type="submit" value="Сохранить изменения">
+    </form>
 
     {% if messages %}
     <ul class="messages">
@@ -52,27 +72,5 @@
     </ul>
     {% endif %}
 
-    
-    <br />
-    <table>
-        <tr>
-            <th>Номер группы</th>
-            <th>Предмет</th>
-            <th>Преподователь</th>
-            <th>Семестр</th>
-            <th>Дата</th>
-            <th>Действия</th>
-        </tr>
-        {% for obj in objects %}
-        <tr>
-            <td>{{ obj.group }}</td>
-            <td>{{ obj.discipline }}</td>
-            <td>{{ obj.teacher }}</td>
-            <td>{{ obj.semester }}</td>
-            <td>{{ obj.date }}</td>
-            <td><a href="{% url 'edit_schedule' obj.id %}">Изменить</a></td>
-        </tr>
-        {% endfor %}
-    </table>
 </body>
-<html>
+</html>

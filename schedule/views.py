@@ -1,3 +1,4 @@
+from email import message
 from itertools import count
 from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import redirect, render
@@ -6,11 +7,17 @@ from schedule.forms import *
 from schedule.models import *
 from django.db.models import Q, Count
 
+
+
+
 def index(request): 
     return render(request, 'schedule/index.html')
 
+
+
+
 def schedule(request):
-    objects = Schedule.objects.all().order_by('group')
+    objects = Schedule.objects.all().order_by('date')
     form = ScheduleForm()
 
     search_query = request.GET.get('search', '')
@@ -29,15 +36,34 @@ def schedule(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Расписание успешно добавлено')
-            return redirect('schedule/schedule.html')
         else:
-            form = ScheduleForm()
+            messages.error(request, 'Ошибка валидации. Проверьте введенные данные.')
+        form = ScheduleForm()
 
     return render(request, 'schedule/schedule.html', {'objects': objects, 'form': form})
+
+
+
+
+def edit_schedule(request, pk):
+    schedule = Schedule.objects.get(id=pk)
+    form = ScheduleForm(instance=schedule)
+    
+    if request.method == 'POST':
+        form = ScheduleForm(request.POST, instance=schedule)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Расписание успешно изменено')
+    
+    return render(request, 'schedule/edit_schedule.html', {'form': form, 'schedule': schedule})
+
+
+
 
 def session(request):
     objects = Session.objects.all().order_by('student')
     form = SessionForm()
+    filter_form = FilterForm()
     
     search_query = request.GET.get('search', '')
 
@@ -54,35 +80,64 @@ def session(request):
         
         if form.is_valid():
             form.save()
-            messages.success(request, 'Расписание успешно добавлено')
-            return redirect('schedule/schedule.html')
+            messages.success(request, 'Оценка успешно добавлена')
         else:
-            form = SessionForm()
+            messages.error(request, 'Ошибка валидации. Проверьте введенные данные.')
+        form = SessionForm()
+        
+        if 'submit_filter_form' in request.POST:
+            filter_form = FilterForm(request.POST)
+            if filter_form.is_valid():
+                year = filter_form.cleaned_data.get('year')
+                semestr = filter_form.cleaned_data.get('semestr')
+                objects = Session.objects.filter(year=year, semestr=semestr)
+            
+    elif request.method == 'GET':
+        filter_form = FilterForm(request.GET)
+        if filter_form.is_valid():
+            year = filter_form.cleaned_data.get('year')
+            semestr = filter_form.cleaned_data.get('semestr')
+            objects = Session.objects.filter(year=year, semestr=semestr)
+    
+    return render(request, 'schedule/session.html', {'form': form, 'objects': objects, 'search_query': search_query, 'filter_form': filter_form})
 
-    return render(request, 'schedule/session.html', {'form': form, 'objects': objects, 'search_query': search_query})
 
-def teachers(request): 
-    # objects = Teachers.objects.all().order_by('study_discipline')    
+
+
+
+def teachers(request):   
     objects = Teachers.objects.filter(
         Q(session__mark__mark='2') | 
         Q(session__mark__mark='незачет')
     ).distinct().order_by('study_discipline')
+    
     return render(request, 'schedule/teachers.html', {'objects': objects}) 
+
+
 
 def students(request): 
     objects = Student.objects.all().order_by('group')
     
     form = StudentForm()
     if request.method == 'POST':
-        if 'reactivate_student' in request.POST:  # Если нажата кнопка "Восстановить студента"
-            if Student.is_expelled:  # Проверяем, является ли студент отчислен
-                # Изменяем статус студента на "учится" и устанавливаем год обучения 2025
-                Student.is_studying = True
-                Student.study_year = '2025'
-    else:
+        if 'reactivate_student' in request.POST:
+            student_id = request.POST.get('student')
+            student = Student.objects.get(id=student_id)
+            if student.is_expelled:
+                student.is_expelled = False
+                student.is_studying = True
+                student.study_year = '2025'
+                student.save()
+                messages.success(request, 'Студент успешно восстановлен')
+            else:
+                messages.error(request, 'Студент не бьл отчислен')
         form = StudentForm()
         
-    return render(request, 'schedule/students.html', {'objects': objects, 'form': form}) 
+    return render(request, 'schedule/students.html', {'objects': objects, 'form': form})
+
+
+
+
 
 def page_not_found(request, exception):
     return HttpResponseNotFound("<h1>Page Not Found</h1>")

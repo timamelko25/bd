@@ -30,11 +30,16 @@
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Сохранить</button>
-        {% if student.is_expelled %}
+        <input type="hidden" name="student_id" value="{{ student.id }}">
         <button type="submit" name="reactivate_student">Восстановить студента</button>
-        {% endif %}
     </form>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 
     <br />
     <table>
@@ -42,18 +47,30 @@
             <th>Студент</th>
             <th>Группа</th>
             <th>Специальность</th>
-            <th>Учится</th>
-            <th>Выпускник</th>
-            <th>Отчислен</th>
+            <th>Год обучения</th>
+            <th>Статус</th>
         </tr>
         {% for obj in objects %}
         <tr>
             <td>{{ obj.name }}</td>
             <td>{{ obj.group }}</td>
             <td>{{ obj.speciality }}</td>
-            <td>{% if student.is_studying %}Нет{% else %}Да{% endif %}</td>
-            <td>{% if student.is_graduated %}Нет{% else %} {% endif %}</td>
-            <td>{% if student.is_expelled %}Да{% else %} {% endif %}</td>
+            <td>{{ obj.study_year }}</td>
+            <td>
+                {% if obj.is_studying == True %}
+                  Учится
+                {% else %}
+                    {% if obj.is_gradueted == True %}
+                        Выпускник
+                    {% else %}
+                        {% if obj.is_expelled == True %}
+                            Отчислен
+                        {% else %}
+                            Неизвестно
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+              </td>
         </tr>
         {% endfor %}
     </table>
