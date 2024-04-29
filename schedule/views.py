@@ -6,11 +6,11 @@ from django.contrib import messages
 from schedule.forms import *
 from schedule.models import *
 from django.db.models import Q, Count
-
-
+#from .database_filing import Data
 
 
 def index(request): 
+    #Data()
     return render(request, 'schedule/index.html')
 
 
@@ -108,8 +108,8 @@ def session(request):
 
 def teachers(request):   
     objects = Teachers.objects.filter(
-        Q(session__mark__mark='2') | 
-        Q(session__mark__mark='незачет')
+        Q(session__mark='2') | 
+        Q(session__mark='незачет')
     ).distinct().order_by('study_discipline')
     
     return render(request, 'schedule/teachers.html', {'objects': objects}) 

@@ -5,8 +5,15 @@ class Group(models.Model):
     group_number = models.CharField(max_length=255, unique=True)
     speciality = models.ForeignKey('Speciality', on_delete=models.DO_NOTHING)
     def __str__(self):
-        return self.group_number   
- 
+        return self.group_number
+    
+
+class Teachers(models.Model):
+    name = models.CharField(max_length=255)
+    study_discipline = models.ForeignKey('Discipline', on_delete=models.DO_NOTHING)
+    
+    def __str__(self):
+        return self.name
  
  
  
@@ -20,50 +27,33 @@ class Discipline(models.Model):
     
     def __str__(self):
         return self.name
-    
-    def clean(self):
-        if Discipline.objects.filter(name=self.name).exists():
-            raise ValidationError('Дисциплина с таким именем уже существует.')
-    
-    
-    
-class Teachers(models.Model):
-    name = models.CharField(max_length=255)
-    study_discipline = models.ForeignKey(Discipline, on_delete=models.DO_NOTHING)
-    
-    def __str__(self):
-        return self.name
-    
-    
+   
     
     
 
 class Speciality(models.Model):
-    DURATION_CHOISES = (
-        ('1','1'),
-        ('2','2'),
-    )
-    
-    SEMESTR_CHOISES = (
-        ('1','1'),
-        ('2','2'),
-        ('3','1,2'),
-    )
     name = models.CharField(max_length=255)
-    disciplines = models.ManyToManyField(Discipline)
-    duration_discipline = models.CharField(max_length=255, choices=DURATION_CHOISES)
-    semestr_discipline = models.CharField(max_length=50, choices=SEMESTR_CHOISES)
-    
-    def clean(self):
-        if self.duration_discipline == '1' and self.semestr_discipline == '2':
-            self.semestr_discipline = '1'
-        elif self.duration_discipline == '2' and self.semestr_discipline != '1,2':
-            self.semestr_discipline = '1,2'
             
     def __str__(self):
         return self.name
 
 
+class SpecialityDiscipline(models.Model):
+    DURATION_CHOICES = (
+        ('1','1'),
+        ('2','2'),
+    )
+    
+    SEMESTER_CHOICES = (
+        ('1','1'),
+        ('2','2'),
+        ('3','1,2'),
+    )
+    
+    speciality = models.ForeignKey(Speciality, on_delete=models.CASCADE)
+    discipline = models.ForeignKey(Discipline, on_delete=models.CASCADE)
+    duration_discipline = models.CharField(max_length=255, choices=DURATION_CHOICES)
+    semester_discipline = models.CharField(max_length=50, choices=SEMESTER_CHOICES)
 
 
 
@@ -115,48 +105,30 @@ class Schedule(models.Model):
 
 
 class Session(models.Model):
+    
+    MARK_CHOICES = (
+        ('незачет', 'незачет'),
+        ('зачет', 'зачет'),
+        ('2', '2'),
+        ('3', '3'),
+        ('4', '4'),
+        ('5', '5'),
+    )
+    
     semestr = models.CharField(max_length=255)
     year = models.CharField(max_length=255)
     student = models.ForeignKey(Student, on_delete=models.DO_NOTHING)
     discipline = models.ForeignKey(Discipline, on_delete=models.DO_NOTHING)
     teacher = models.ForeignKey(Teachers, on_delete=models.DO_NOTHING)
-    mark = models.ForeignKey('Mark', on_delete=models.DO_NOTHING)
-    
-    def clean(self):
-        existing_session = Session.objects.filter(
-            student=self.student,
-            discipline=self.discipline,
-            teacher=self.teacher,
-            semestr=self.semestr,
-            year=self.year
-        ).exists()
-        if existing_session:
-            raise ValidationError('Уже поставлена оценка за этот семестр и год')
-
-        if self.discipline != self.student.speciality.disciplines:
-            raise ValidationError('Студент не принадлежит к специальности, связанной с этой дисциплиной')
-
-        if self.teacher.study_discipline != self.discipline:
-            raise ValidationError('Преподаватель не ведет эту дисциплину')
+    mark = models.CharField(max_length=255, choices=MARK_CHOICES)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)  
 
-        if self.mark.mark == '2' or self.mark.mark == 'незачет':
+        if self.mark == '2' or self.mark == 'незачет':
             self.student.is_studying = False
             self.student.is_expelled = True
         self.student.save()
 
     def __str__(self):
         return str(self.student)
-    
-    
-    
-    
-
-
-class Mark (models.Model):
-    mark = models.CharField(max_length=255)
-    
-    def __str__(self):
-        return self.mark

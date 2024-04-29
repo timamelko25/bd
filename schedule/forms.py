@@ -8,7 +8,7 @@ class SessionForm(forms.ModelForm):
     semestr = forms.IntegerField(label='Семестр', min_value=1, max_value=2)
     teacher = forms.ModelChoiceField(queryset=Teachers.objects.all().order_by('name'), label='Преподаватель', empty_label='')
     discipline = forms.ModelChoiceField(queryset=Discipline.objects.all().order_by('name'), label='Дисциплина', empty_label='')
-    mark = forms.ModelChoiceField(queryset=Mark.objects.all(), label='Оценка', empty_label='')
+    mark = forms.CharField(label='Оценка')
     year = forms.IntegerField(label='Год', min_value=2000, max_value=2024)
     
     class Meta:

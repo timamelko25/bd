@@ -1,8 +1,5 @@
 /venv
-/.vscode
 
 /Databaseproject/__pycache__
 
 /schedule/__pycache__
-
-/schedule/migrations
