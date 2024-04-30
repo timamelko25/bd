@@ -71,7 +71,7 @@ class Data():
         )
         
             
-    for i in range(100):
+    for i in range(10000):
         group = random.choice(Group.objects.all())
         student = Student.objects.create(
             name = fake.name(),
@@ -98,10 +98,11 @@ class Data():
         )
         
     for i in range(100):
-        schedule = Schedule.objects.create(
-            date = fake.date(),
+        group = random.choice(Group.objects.all())
+        Schedule.objects.create(
+            date = fake.date_between(start_date='-24y', end_date='now'),
             semester = random.choice([1,2]),
-            group = random.choice(Group.objects.all()),
+            group = group,
             discipline = random.choice(Discipline.objects.all()),
-            teacher = random.choice(Teachers.objects.filter(study_discipline = schedule.discipline))
+            teacher = random.choice(Teachers.objects.all())
         )

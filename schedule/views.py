@@ -4,11 +4,11 @@ from django.contrib import messages
 from schedule.forms import *
 from schedule.models import *
 from django.db.models import Q
-#from .database_filing import Data
+from .database_filing import Data
 
 
 def index(request): 
-    #Data()
+    Data()
     return render(request, 'schedule/index.html')
 
 
@@ -22,10 +22,12 @@ def schedule(request):
 
     if search_query:
         objects = objects.filter(
+            Q(id__icontains=search_query) |
+            Q(semester__semester__icontains=search_query) |
             Q(group_group__icontains=search_query) |
             Q(teacher_teacher__icontains=search_query) |
             Q(discipline_discipline__icontains=search_query) |
-            Q(data__icontains=search_query)
+            Q(date__icontains=search_query)
         )
 
     if request.method == 'POST':
