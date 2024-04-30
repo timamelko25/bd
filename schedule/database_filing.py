@@ -31,18 +31,23 @@ class Data():
             "Химическая технология",
             "Бухгалтерский учет и аудит",
             "Маркетинг",
-            "Гражданская защита"
-        ]
+            "Гражданская защита",
+            "Авиационная и ракетно-космическая техника",
+            "Архитектура",
+            'Технология оборудования и электроинструмент',
+            "Информационная безопасность",
+            "Компьютерная безопасность"
+            ]
 
     for i in range(15):
         Discipline.objects.create(
-            name = random.choice(discipline_names),
+            name = discipline_names[i],
             exam = random.choice(Discipline.EXAM_CHOISES)[0]
         )
         
     for i in range(15):
         Speciality.objects.create(
-            name = random.choice(specialities)
+            name=specialities[i]
         )
         
     for i in range(60):
@@ -56,7 +61,7 @@ class Data():
     for i in range(15):
         Group.objects.create(
             group_number = i+1,
-            speciality = random.choice(Speciality.objects.all())
+            speciality = Speciality.objects.get(id=i+1)
         )
         
     for i in range(15):
@@ -72,12 +77,31 @@ class Data():
             name = fake.name(),
             group = group,
             speciality = group.speciality,
-            study_year = random.randint(2000, 2025),
+            study_year = random.randint(2000, 2024),
             is_studying = False,
             is_gradueted = random.choice([True, False]),
             is_expelled = random.choice([True, False])
         )
-        if Student.objects.filter(study_year__icontains='2024').exists():
+        if Student.objects.filter(study_year='2024').exists():
             student.is_studying = True
             student.is_studying = False
             student.is_gradueted = False
+
+    for i in range(100):
+        Session.objects.create(
+            semestr = random.choice([1,2]),
+            year = random.randint(2000, 2024),
+            student = random.choice(Student.objects.all()),
+            teacher = random.choice(Teachers.objects.all()),
+            discipline = random.choice(Discipline.objects.all()),
+            mark = random.choice(Session.MARK_CHOICES)[0]
+        )
+        
+    for i in range(100):
+        schedule = Schedule.objects.create(
+            date = fake.date(),
+            semester = random.choice([1,2]),
+            group = random.choice(Group.objects.all()),
+            discipline = random.choice(Discipline.objects.all()),
+            teacher = random.choice(Teachers.objects.filter(study_discipline = schedule.discipline))
+        )

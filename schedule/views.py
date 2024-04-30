@@ -1,11 +1,9 @@
-from email import message
-from itertools import count
-from django.http import HttpResponse, HttpResponseNotFound
-from django.shortcuts import redirect, render
+from django.http import HttpResponseNotFound, JsonResponse
+from django.shortcuts import render
 from django.contrib import messages
 from schedule.forms import *
 from schedule.models import *
-from django.db.models import Q, Count
+from django.db.models import Q
 #from .database_filing import Data
 
 
@@ -70,7 +68,7 @@ def session(request):
     if search_query:
         objects = objects.filter(
             Q(student__name__icontains=search_query) |
-            Q(mark__mark__icontains=search_query) |
+            Q(mark__icontains=search_query) |
             Q(year__icontains=search_query) |
             Q(discipline__name__icontains=search_query)
         )
@@ -97,7 +95,7 @@ def session(request):
         year = request.GET.get('year')
         semestr = request.GET.get('semestr')
         if year and semestr:
-            objects = Session.objects.filter(year=year, semestr=semestr, mark__mark__in=['2', 'незачет'])
+            objects = Session.objects.filter(year=year, semestr=semestr, mark__in=['2', 'незачет'])
 
     return render(request, 'schedule/session.html', {'form': form, 'objects': objects, 'search_query': search_query, 'filter_form': filter_form})
 
@@ -135,9 +133,6 @@ def students(request):
         form = StudentForm()
         
     return render(request, 'schedule/students.html', {'objects': objects, 'form': form})
-
-
-
 
 
 def page_not_found(request, exception):

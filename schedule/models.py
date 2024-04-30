@@ -92,9 +92,6 @@ class Schedule(models.Model):
         groups_count = Schedule.objects.filter(teacher=self.teacher, semester=self.semester).count()
         if groups_count >= 2:
             raise ValidationError('Преподаватель может вести не более двух групп в семестре')
-
-        if self.discipline not in Discipline.objects.filter(speciality=self.group.speciality):
-            raise ValidationError('Дисциплина не принадлежит к списку поставленных занятий для этой специальности')
         
     def __str__(self):
         return self.group
