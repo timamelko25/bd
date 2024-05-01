@@ -190,7 +190,7 @@ class Research():
         print(f"Удаление группы занял {average_time}")
         
         total_time = 0
-        num_experiments = 100
+        num_experiments = 1
         for _ in range(num_experiments):
             total_time += self.compression1()
 
@@ -198,7 +198,7 @@ class Research():
         print(f"Сжатие1 занял {average_time}")
         
         total_time = 0
-        num_experiments = 100
+        num_experiments = 1
         for _ in range(num_experiments):
             total_time += self.compression2()
 
