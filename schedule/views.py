@@ -4,11 +4,15 @@ from django.contrib import messages
 from schedule.forms import *
 from schedule.models import *
 from django.db.models import Q
-from .database_filing import Data
+#from .database_filing import Data
+
+from schedule.research import Research
 
 
 def index(request): 
-    Data()
+    #Data()
+    research = Research()
+    research.main()
     return render(request, 'schedule/index.html')
 
 
@@ -16,6 +20,7 @@ def index(request):
 
 def schedule(request):
     objects = Schedule.objects.all().order_by('date')
+
     form = ScheduleForm()
 
     search_query = request.GET.get('search', '')

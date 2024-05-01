@@ -50,8 +50,8 @@ class SpecialityDiscipline(models.Model):
         ('3','1,2'),
     )
     
-    speciality = models.ForeignKey(Speciality, on_delete=models.CASCADE)
-    discipline = models.ForeignKey(Discipline, on_delete=models.CASCADE)
+    speciality = models.ForeignKey(Speciality, on_delete=models.DO_NOTHING)
+    discipline = models.ForeignKey(Discipline, on_delete=models.DO_NOTHING)
     duration_discipline = models.CharField(max_length=255, choices=DURATION_CHOICES)
     semester_discipline = models.CharField(max_length=50, choices=SEMESTER_CHOICES)
 
@@ -59,8 +59,8 @@ class SpecialityDiscipline(models.Model):
 
 class Student(models.Model):
     name = models.CharField(max_length=255)
-    group = models.ForeignKey(Group, on_delete=models.DO_NOTHING)
-    speciality = models.ForeignKey(Speciality, on_delete=models.DO_NOTHING)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    speciality = models.ForeignKey(Speciality, on_delete=models.CASCADE)
     study_year = models.CharField(max_length=255)
     is_studying = models.BooleanField(default=True)
     is_gradueted = models.BooleanField(default=False)
@@ -114,7 +114,7 @@ class Session(models.Model):
     
     semestr = models.CharField(max_length=255)
     year = models.CharField(max_length=255)
-    student = models.ForeignKey(Student, on_delete=models.DO_NOTHING)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
     discipline = models.ForeignKey(Discipline, on_delete=models.DO_NOTHING)
     teacher = models.ForeignKey(Teachers, on_delete=models.DO_NOTHING)
     mark = models.CharField(max_length=255, choices=MARK_CHOICES)
