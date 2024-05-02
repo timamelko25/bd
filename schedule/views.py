@@ -4,15 +4,13 @@ from django.contrib import messages
 from schedule.forms import *
 from schedule.models import *
 from django.db.models import Q
-#from .database_filing import Data
+from .database_filing import Data
 
 from schedule.research import Research
 
 
 def index(request): 
-    #Data()
-    research = Research()
-    research.main()
+    
     return render(request, 'schedule/index.html')
 
 
@@ -141,6 +139,30 @@ def students(request):
         
     return render(request, 'schedule/students.html', {'objects': objects, 'form': form})
 
+
+def research(request):
+    research = Research()
+    research.main()
+    context = {
+        'avg_search_key': research.avg1,
+        'avg_search_not_key': research.avg2,
+        'avg_search_mask': research.avg3,
+        'avg_add': research.avg4,
+        'avg_add_many': research.avg5,
+        'avg_change': research.avg6,
+        'avg_change_many': research.avg7,
+        'avg_delete_key': research.avg8,
+        'avg_delete_not_key': research.avg9,
+        'avg_delete_many': research.avg10,
+        'avg_compression1': research.avg11,
+        'avg_compression2': research.avg12,
+    }
+    return render(request, 'schedule/research.html', context)
+
+def database_filing(request):
+    data = Data()
+    data.main()
+    return render(request, 'schedule/database_filing.html')
 
 def page_not_found(request, exception):
     return HttpResponseNotFound("<h1>Page Not Found</h1>")
