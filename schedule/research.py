@@ -40,7 +40,7 @@ class Research():
         return end_time - start_time
 
     def search_not_key(self, choice):
-        speciality = Speciality.objects.filter(name=choice)
+        speciality = Speciality.objects.get(name=choice)
         start_time = time.time()
 
         Student.objects.filter(speciality = speciality)
@@ -90,8 +90,8 @@ class Research():
         return end_time - start_time
 
     def change_many(self, choice1, choice2):
-        speciality1 = Speciality.objects.filter(name=choice1).first()
-        speciality2 = Speciality.objects.filter(name=choice2).first()
+        speciality1 = Speciality.objects.get(name=choice1)
+        speciality2 = Speciality.objects.get(name=choice2)
         start_time = time.time()
         tmp1 = Student.objects.filter(speciality=speciality1).first()
         tmp2 = Student.objects.filter(speciality=speciality2).first()
@@ -130,6 +130,10 @@ class Research():
         start_time = time.time()
         connection = sqlite3.connect(db_name)
         cursor = connection.cursor()
+        
+        cursor.execute(f"CREATE TABLE 'temp_table' AS SELECT * FROM schedule_student EXCEPT SELECT * FROM schedule_student LIMIT {limit}")
+        cursor.execute("DROP TABLE schedule_student")
+        
         cursor.execute('VACUUM')
         connection.close()
         end_time = time.time()
@@ -140,9 +144,10 @@ class Research():
         start_time = time.time()
         connection = sqlite3.connect(db_name)
         cursor = connection.cursor()
+        
         cursor.execute("CREATE TABLE temp_table AS SELECT * FROM schedule_student LIMIT 200")
         cursor.execute("DROP TABLE schedule_student")
-        cursor.execute("ALTER TABLE temp_table RENAME TO schedule_student")
+        
         cursor.execute("VACUUM")
         connection.close()
         end_time = time.time()
@@ -191,7 +196,7 @@ class Research():
             t9 += self.delete_not_key(choice = fake.name())
             t10 += self.delete_many(choice = fake.name())
             
-        t11 += self.compression1(db_name, limit = 200)
+        #t11 += self.compression1(db_name, limit = 200)
         t12 += self.compression2(db_name)
             
 
