@@ -26,12 +26,61 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    
     <script>
         $(document).ready(function(){
+            // Datepicker initialization
             $('.datepicker').datepicker({
                 dateFormat: 'yy-mm-dd'
             });
+        
+            // AJAX request to fetch disciplines based on selected group's specialty
+            $('#id_group').change(function() {
+                var groupId = $(this).val();
+                if (groupId) {
+                    $.ajax({
+                        url: '/get_group_disciplines/',  // URL of the Django view to fetch disciplines
+                        data: {
+                            'group_id': groupId
+                        },
+                        dataType: 'json',
+                        success: function(data) {
+                            $('#id_discipline').empty();
+                            $.each(data.disciplines, function(index, discipline) {
+                                $('#id_discipline').append($('<option>', {
+                                    value: discipline[0],
+                                    text: discipline[1]
+                                }));
+                            });
+                        }
+                    });
+                }
+            });
+        
+            // AJAX request to fetch teachers based on selected discipline
+            $('#id_discipline').change(function() {
+                var disciplineId = $(this).val();
+                if (disciplineId) {
+                    $.ajax({
+                        url: '/get_discipline_teachers/',  // URL of the Django view to fetch teachers
+                        data: {
+                            'discipline_id': disciplineId
+                        },
+                        dataType: 'json',
+                        success: function(data) {
+                            $('#id_teacher').empty();
+                            $.each(data.teachers, function(index, teacher) {
+                                $('#id_teacher').append($('<option>', {
+                                    value: teacher[0],
+                                    text: teacher[1]
+                                }));
+                            });
+                        }
+                    });
+                }
+            });
         });
+        
     </script>
 </head>
 <body>

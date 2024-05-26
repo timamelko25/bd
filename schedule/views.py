@@ -45,7 +45,24 @@ def schedule(request):
 
     return render(request, 'schedule/schedule.html', {'objects': objects, 'form': form})
 
-
+def get_group_disciplines(request):
+    group_id = request.GET.get('group_id')
+    if group_id:
+        group = Group.objects.get(pk=group_id)
+        disciplines = SpecialityDiscipline.objects.filter(speciality=group.speciality).values_list('discipline__id', 'discipline__name')
+        data = {'disciplines': list(disciplines)}
+        return JsonResponse(data)
+    else:
+        return JsonResponse({'error': 'Group ID is required'})
+    
+def get_discipline_teachers(request):
+    discipline_id = request.GET.get('discipline_id')
+    if discipline_id:
+        teachers = Teachers.objects.filter(study_discipline=discipline_id).values_list('id', 'name')
+        data = {'teachers': list(teachers)}
+        return JsonResponse(data)
+    else:
+        return JsonResponse({'error': 'Discipline ID is required'})
 
 
 def edit_schedule(request, pk):
